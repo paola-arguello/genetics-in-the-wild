@@ -2,32 +2,20 @@
 
 Nov 20, 2026 · @Pao
 
-Rebuild Tuffaha 2018 in R with Australian inputs first, match its published results, then swap in Canadian values and run Mexico as a scenario. Every number comes from [parameters/master_parameters.csv](parameters/master_parameters.csv). Learning model, not for clinical or policy use.
-
-## What changed when merging the two drafts
-
-I checked both drafts against Tuffaha's full PDF (including Tables 1 to 3 and Figure 1), and against the text of Hurry 2020 and Sun 2024, on Nov 20. Most of the second draft held up. These points did not, or needed correcting:
-
-| Claim in a draft | What the papers say |
-| --- | --- |
-| Sun 2024 costs (CAD 220 test, CAD 167 counselling) could not be verified | Verified: CAD 220 per test (±30%) and CAD 167 counselling, 2022 CAD |
-| Ovarian mortality 0.15 doesn't match 57% 5-year mortality | It matches. 57% gives a rate of 0.169 and a probability of 0.155. The drafts compared a probability with a rate |
-| 0.70 life-years vs 0.17 QALYs is an internal inconsistency | Table 2 labels costs and QALYs as discounted but not life-years. The 0.70 is likely undiscounted, summed over the whole family |
-| Risk reductions 90%, 50% and 80% | The text says so, but Table 1 uses RRs of 0.110, 0.550 and 0.166 (89%, 45%, 83% reductions). Use Table 1 |
-| Breast cancer year-1 cost AU$25,000 | Table 1 says AU$24,510. The text rounds it |
-| Pretest probability range 5-20% | One-way analysis uses 5% and 20% (Table 3). The PSA uses uniform 10-20% (Table 1) |
-| Hurry simulated 37,290 people | Hurry says 36,290 (29,102 + 6,136 + 1,052 = 36,290) |
-| Mexico uses 3x GDP per capita as the national threshold | Molina-Jaimes 2023 mentions a national WTP but the value is not confirmed yet |
-
-Confirmed from the PDF: children are tested at 20 and act at 30; second-degree relatives are the children of siblings who test positive; Figure 1a weights are 1, 0.8 and 1.8; there is no uptake parameter, so testing uptake is 100% in the base case; the surgery split is a Dirichlet over carriers, so every carrier has some surgery in the base case.
-
-The .bib file used Sci-Hub links. I replaced them with doi.org links. Don't put Sci-Hub links in a public repo or portfolio.
-
-Hurry 2020 was funded by AstraZeneca Canada and the corresponding author worked there. Use its values, but say so where you do.
-
-## Decisions you make before building
-
-Each one is yours to make. Write the choice and one line of reasoning in the repo's README before coding.
+## GOALS
+1. To rebuild Tuffaha 2018 in R with Australian inputs
+   Completed after step 6
+   
+3. Swap in Canadian values and compare to available literature
+   Completed after step 8
+   
+5. Swap in Mexican values (approximations when not available)
+   Completed after step 9
+   
+Every number comes from [parameters/master_parameters.csv](parameters/master_parameters.csv).
+  
+## Prior to building the model
+Decisions should be made on the following fronts: 
 
 - [ ] Half-cycle correction: none (as Tuffaha appears to do) or mid-cycle. Mid-cycle is the more common choice, but replication is easier without it. You could match Tuffaha first, then switch
 - [ ] Surgery: keep Tuffaha's base case (every carrier has surgery) and also run their 80% surgery / 20% surveillance scenario?
@@ -37,11 +25,12 @@ Each one is yours to make. Write the choice and one line of reasoning in the rep
 - [ ] Disutility for risk-reducing surgery: none (Tuffaha) or applied (Hurry)
 - [ ] Where the model lives: its own repo or inside the pipeline repo
 
-Stopping points from the plan: Stop 1 = Steps 1 to 6 (base case that matches Tuffaha). Stop 2 = Step 7 one-way analysis plus Step 8 Canada. Stop 3 = probabilistic analysis and Step 10 reporting. Bonus (ancestry thread) = Step 9 Mexico.
+## Documentation & Reproducibility
 
-## Step 1: Repo layout and the parameter file
+- **Parameters:** Every number lives in one parameter file
+- **Master function**: Calls on parameters file and runs the base case, one-way analysis and probabilistic analysis
 
-One rule keeps the model from becoming a black box: every number lives in one parameter file, and one function runs the model from it. The base case, one-way analysis and probabilistic analysis all call that same function.
+## Step 1 
 
 1. Export the Master sheet's values into `data/params_aus.csv` with these columns: `name, value, low, high, distribution, source, country, status`. Start with Australia only.
 2. Write `R/load_params.R`: reads the CSV and returns a named list.
@@ -152,13 +141,16 @@ If you choose a half-cycle correction, the exponent becomes t − 0.5. Run with 
 \text{ICER} = \frac{C_{new} - C_{old}}{E_{new} - E_{old}} \qquad \text{NMB} = \lambda \, \Delta E - \Delta C
 ```
 
-Tuffaha's Analysis paragraph writes the ICER the wrong way round (effectiveness over cost), but its results use cost over effectiveness. Use cost over effectiveness. λ is the threshold (AU$50,000 per QALY). You need NMB for the acceptability curve later.
+NOTE: Tuffaha's Analysis paragraph writes the ICER with *effectiveness over cost*, but its results use *cost over effectiveness*. Use *cost over effectiveness*. λ is the threshold (AU$50,000 per QALY). 
 
-Report three comparisons: affected only vs none, affected plus cascade vs none, and cascade vs affected only. The last one is the paper's main question.
+Three comparisons to report: 
+- affected only vs none
+- affected plus cascade vs none
+- cascade vs affected only
 
 ## Step 6: Validate against Tuffaha's published results
 
-With Australian inputs, your model should land close to these numbers. All of them are in the paper's text, so they are safe targets. Close means the same order and roughly the same size, not exact: TreeAge and your R code will round differently.
+With Australian inputs, the model should land close to these numbers (all of them are in the paper's text). 
 
 | Comparison | Extra cost | Extra QALYs | ICER per QALY |
 | --- | --- | --- | --- |
@@ -173,7 +165,13 @@ Other checks:
 - Cumulative risk to 70 in carriers without testing: 53% breast, 25% ovarian. With testing: 24% breast, 19% ovarian, 28% contralateral.
 - Life-years: 0.09 for affected only. The paper reports 0.70 for affected plus cascade. Table 2 marks costs and QALYs as discounted but not life-years, so compare your undiscounted life-years with it.
 
-If you are far off, check the family weights first, then the surgery split, then penetrance. Write down every difference you can't explain. A table of differences, each with an explanation, says more about your skill than a perfect match does.
+Contingency: 
+- If results are too far off, check the following in order:
+  1. the family weights
+  2. the surgery split
+  3. penetrance
+    
+Write down every difference you can't explain in a table each with an explanation.
 
 ## Step 7: One-way and probabilistic sensitivity analysis
 
@@ -200,8 +198,6 @@ Keep Tuffaha's structure and change the inputs, one group at a time, in a new fi
 5. Life tables: Statistics Canada.
 
 Hurry is a patient-level simulation with a 50-year horizon, so don't expect your Canadian ICER to match its CAD 14,942 per QALY. Use it as a sense check, not a target. Hurry also compared testing plus surgery against no testing, with no proband-only arm.
-
-This is the version to show for the Methodologist application. It answers a Canadian question with Canadian costs and a stated perspective.
 
 ## Step 9: Mexican scenario and the ancestry thread
 
