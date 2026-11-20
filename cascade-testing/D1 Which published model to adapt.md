@@ -13,10 +13,10 @@ Decision 1 (D1) is to select which published cascade testing model to adapt as t
 | Proband treatment in model | None beyond standard care (to confirm) | Likely olaparib (to confirm) |
 | Horizon | Lifetime, to age 90 | Lifetime |
 | Perspective | Health payer (Australia) | Payer (Australia) |
-| Discount rate | 5% (to confirm) | ? (the companion olaparib paper used 5%) |
+| Discount rate | 5% (confirmed) | ? (the companion olaparib paper used 5%) |
 | Proband only vs no testing | AU$18,900/QALY | AU$265,942/QALY |
 | Adding cascade testing | AU$9,500/QALY vs proband only | AU$16,392/QALY (comparator to confirm) |
-| Full text access | Nature page loads, open access not confirmed | Not checked |
+| Full text access | PDF in hand (Nov 20) | Not checked |
 
 ## My decision
 
@@ -59,6 +59,20 @@ Tuffaha, H. W., Mitchell, A., Ward, R. L., Connelly, L., Butler, J. R. G., Norri
    1. the monetary cost of all genetic testing&#32;
       1. Canada genetic testing cost: [CAD $220 per BRCA1/BRCA2 test (2022 dollars, range ±30%) plus CAD $167 for genetic counselling.](https://jamanetwork.com/journals/jamanetworkopen/fullarticle/2823637)&#32;
    2. the Quality-Adjusted Life Year (QALY) for all family members tested&#32;
+
+## Checked against the full text (Nov 20, 2026)
+
+All five items are confirmed from the Tuffaha 2018 PDF. None are missing.
+
+| Item | Answer | Where |
+| --- | --- | --- |
+| Risk tool behind the 10% | No single tool. Any of BOADICEA, BRCAPRO or the pathology-adjusted Manchester score above 10% | Methods, Model description (p. 2) |
+| Source for 1.6 siblings and 2 children | Australian Institute of Family Studies: a 2.6-child first-generation household and a modern 2-child household (ref. 23, Hayes et al. 2010) | Methods (p. 2) |
+| Discount rate | 5% a year for costs and QALYs | Analysis (p. 6) |
+| Uptake | No uptake parameter, so testing uptake is 100% in the base case. Surgery: every carrier picks RRM alone (30%), RRBSO alone (54%) or both (16%). Table 3 tests 50% testing uptake and 80% surgery / 20% surveillance | Table 1 (p. 4), Table 3 (p. 8) |
+| Table 1 | In hand. All values are in `parameters/master_parameters.csv` | pp. 4-5 |
+
+All parameters with sources: [master_parameters.csv](parameters/master_parameters.csv). Build steps: [Tuffaha 2018 rebuild guide](<Tuffaha 2018 rebuild guide.md>).
 
 ## My contribution
 
